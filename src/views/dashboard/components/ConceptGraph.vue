@@ -1,44 +1,13 @@
-
 <template>
-  <div class="dashboard-editor-container">
-    <el-tab-pane>
-      <el-form>
-        <el-form-item>
-          <div style="font-size:18px;color:gray;">分层领域概念图</div>
-        </el-form-item>
-
-        <div
-          style="margin:0px 0px 20px 110px;padding:0;width:820px;height:1px;background-color:lightGrey;overflow:hidden;"
-        />
-
-        <el-form-item>
-          <div id="container" :style="{width: '500px', height: '400px'}" />
-        </el-form-item>
-
-        <el-row>
-          <div id="excel" :style="{width: '100px', height: '100px'}">content</div>
-        </el-row>
-      </el-form>
-    </el-tab-pane>
-
-    <el-tab-pane>
-      <div>
-        <h1>Knowledge Graph</h1>
-        <svg width="960" height="600" />
-      </div>
-    </el-tab-pane>
-
-  </div>
+  <div id="container" :style="{width: '100%', height: '1000px'}" />
 </template>
 
 <script>
 import * as d3 from 'd3'
-import * as Three from 'three'
 import * as THREE from 'three'
 import { setCanvasContent, setSpriteCanvasContent } from '@/utils/helpers'
-// import { TransformControls } from 'three-transform-controls'
-// const TransformControls = require('three-transform-controls')(THREE)
-// const OrbitControls = require('three-orbit-controls')(THREE)
+import DragControls from 'drag-controls'
+DragControls.install({ THREE: THREE })
 
 // kg data 自底向上
 const customerSchema = [{ name: 'Customer' }, { name: 'companyName' },
@@ -62,34 +31,21 @@ const productSchemaLinks = [{ source: 0, target: 1 }, { source: 0, target: 2 },
 const OrbitControls = require('three-orbit-controls')(THREE)
 
 export default {
-
-  name: 'Dashboard',
+  name: 'ConceptGraph',
   data() {
     return {
-      camera: null,
-      camProduct: null,
-
-      scene: null,
-      renderer: null,
-      // 网格们
-      mesh: null,
-      mesh2: null,
-      meshCom: null,
-
-      plane: null,
-      mesh3: null,
-
-      cubeA: null,
-      cubeB: null,
-      light: null,
-      control: ''
-
+      camera: '',
+      scene: '',
+      renderer: '',
+      container: '',
+      orbitControl: '',
+      objects: []
     }
   },
   mounted() {
     const container = document.getElementById('container')
 
-    this.scene = new Three.Scene()
+    this.scene = new THREE.Scene()
 
     let light = new THREE.AmbientLight(0xffffff, 0.5)
     light.position.set(0, 10, 0)
@@ -100,8 +56,8 @@ export default {
     this.scene.add(light)
 
     // 分层概念关联相机
-    this.camera = new Three.PerspectiveCamera(70, container.clientWidth / container.clientHeight, 1, 1000)
-    this.camera.position.set(20, 40, 100)
+    this.camera = new THREE.PerspectiveCamera(70, container.clientWidth / container.clientHeight, 1, 1000)
+    this.camera.position.set(80, 120, 250)
     this.camera.lookAt(this.scene.position)
 
     const axesHelper = new THREE.AxesHelper(60)
@@ -114,7 +70,7 @@ export default {
 
     simulation
       .force('charge', d3.forceManyBody().strength(-100)) // strength + 引力， - 斥力
-      .force('center', d3.forceCenter(0, 0))// 重力
+      .force('center', d3.forceCenter(-50, -50))// 重力
       .force('link', d3.forceLink().distance(30))// 弹力及稳定时的长度
       // .force('link', d3.forceLink().id(function (d) { return d.index }).distance(5))// 弹力及稳定时的长度
 
@@ -204,9 +160,8 @@ export default {
 
     productSimulation
       .force('charge', d3.forceManyBody().strength(-100)) // strength + 引力， - 斥力
-      .force('center', d3.forceCenter(0, 50))// 重力
+      .force('center', d3.forceCenter(50, 50))// 重力
       .force('link', d3.forceLink().distance(30))// 弹力及稳定时的长度
-      // .force('link', d3.forceLink().id(function (d) { return d.index }).distance(5))// 弹力及稳定时的长度
 
     productSimulation.nodes(productSchema)
       .on('tick', this.productTickAction)
@@ -245,29 +200,6 @@ export default {
     })
     this.scene.add(productGroup)
 
-    // 其他概念层
-    // var material = new Three.MeshBasicMaterial({color: 0xffff00, side: Three.DoubleSide})
-    //
-    // // 企业
-    // var radius = 5
-    // var companyGeo = new THREE.IcosahedronBufferGeometry(radius)
-    // this.meshCom = new Three.Mesh(companyGeo, material)
-    // this.scene.add(this.meshCom)
-    // this.meshCom.position.set(0, 50, 0)
-    //
-    // // 订单
-    // var group = new THREE.Group()
-    //
-    // var orderGeo = new Three.BoxGeometry(10, 10, 10)
-    // this.cubeA = new THREE.Mesh(orderGeo, material)
-    // this.cubeA.position.set(0, -50, 0)
-    //
-    // this.cubeB = new THREE.Mesh(orderGeo, material)
-    // this.cubeB.position.set(20, -50, 0)
-    //
-    // group.add(this.cubeA, this.cubeB)
-    // this.scene.add(group)
-
     // 关联
     var start = new THREE.Vector3(0, 0, 0)
     var end = new THREE.Vector3(0, 50, 0)
@@ -277,16 +209,6 @@ export default {
     lineGeo.vertices.push(end)
     var line = new THREE.Line(lineGeo, lineMaterial)
     this.scene.add(line)
-
-    // 2.一个不旋转的平面
-    // var geometry3 = new Three.PlaneBufferGeometry(2, 2)
-    // geometry3.rotateX(-Math.PI / 2)
-    //
-    // // var material3 = new Three.MeshBasicMaterial({color: 0xffff00, side: Three.DoubleSide})
-    // var material3 = new Three.MeshBasicMaterial({color: 0xffff00, visible: false})
-    // this.plane = new Three.Mesh(geometry3, material3)
-    //
-    // this.scene.add(this.plane)
 
     // 3.一个网格
     var size = 100
@@ -313,19 +235,37 @@ export default {
     this.scene.add(gridHelper3)
 
     // 渲染
-    this.renderer = new Three.WebGLRenderer({ antialias: true })
+    this.renderer = new THREE.WebGLRenderer({ antialias: true })
     this.renderer.setSize(container.clientWidth, container.clientHeight)
     container.appendChild(this.renderer.domElement)
 
     // this.renderer.render(this.scene, this.camera)
+
+    this.objects.push(customerGroup)
+    this.objects.push(productGroup)
+    this.objects.push(orderGroup)
+
     this.initControls()
     this.animate()
   },
   methods: {
     initControls() {
-      this.control = new OrbitControls(this.camera, this.renderer.domElement)
-      this.control.update()
-      this.control.addEventListener('change', this.render)
+      this.orbitControl = new OrbitControls(this.camera, this.renderer.domElement)
+      this.orbitControl.update()
+      this.orbitControl.addEventListener('change', this.render)
+
+      // TODO: dragControl选定Group
+      this.dragControl = new DragControls(this.objects, this.camera, this.renderer.domElement)
+      // this.dragControl.addEventListener('dragstart', function (event) {
+      this.dragControl.addEventListener('mouseDown', function(event) {
+        this.orbitControl.enabled = false
+        event.object.material.emissive.set(0xaaaaaa)
+      })
+      // this.dragControl.addEventListener('dragend', function (event) {
+      this.dragControl.addEventListener('mouseUp', function(event) {
+        this.orbitControl.enabled = true
+        event.object.material.emissive.set(0x000000)
+      })
     },
     customerTickAction() {
       customerSchema.forEach(node => {
@@ -335,28 +275,19 @@ export default {
         // let y = node.y
         // let circle = node.circle
 
-        circle.position.set(x, 0, y)
-
-        // node.circle.position.set(node.x, 0, node.y)
+        circle.position.set(x, -50, y)
       })
       customerSchemaLinks.forEach((link) => {
         const { source, target, line } = link
         line.geometry.verticesNeedUpdate = true
-        line.geometry.vertices[0] = new THREE.Vector3(source.x, 0, source.y)
-        line.geometry.vertices[1] = new THREE.Vector3(target.x, 0, target.y)
+        line.geometry.vertices[0] = new THREE.Vector3(source.x, -50, source.y)
+        line.geometry.vertices[1] = new THREE.Vector3(target.x, -50, target.y)
       })
     },
     productTickAction() {
       productSchema.forEach(node => {
         const { x, y, circle } = node
-
-        // let x = node.x
-        // let y = node.y
-        // let circle = node.circle
-
         circle.position.set(x, 50, y)
-
-        // node.circle.position.set(node.x, 0, node.y)
       })
       productSchemaLinks.forEach((link) => {
         const { source, target, line } = link
@@ -405,35 +336,11 @@ export default {
 
       this.renderer.render(this.scene, this.camera)
       // this.renderer.render(this.scene, this.camProduct)
-    },
-
-    getParticles() {
-      this.$store.dispatch('GetProductNode').then(data => {
-        console.log(this.products)
-      })
     }
   }
 }
 </script>
 
 <style scoped>
-  #container {
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-  }
-
-  .dashboard {
-  &-container {
-     margin: 30px;
-   }
-  &-text {
-     font-size: 30px;
-     line-height: 46px;
-   }
-  }
 
 </style>
-

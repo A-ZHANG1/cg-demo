@@ -15,15 +15,25 @@
     "svgo": "svgo -f src/icons/svg --config=src/icons/svgo.yml"
   },
   "dependencies": {
+    "@tweenjs/tween.js": "^18.4.2",
     "axios": "0.18.1",
+    "d3": "^5.12.0",
+    "dagre": "^0.8.4",
+    "dagre-d3": "^0.6.3",
+    "drag-controls": "^1.0.4",
+    "echarts": "^4.4.0",
     "element-ui": "2.7.2",
     "js-cookie": "2.2.0",
     "normalize.css": "7.0.0",
     "nprogress": "0.2.0",
     "path-to-regexp": "2.4.0",
+    "three": "^0.110.0",
+    "three-orbit-controls": "^82.1.0",
+    "three-transform-controls": "^1.0.4",
     "vue": "2.6.10",
     "vue-router": "3.0.6",
-    "vuex": "3.1.0"
+    "vuex": "3.1.0",
+    "xlsx": "^0.15.1"
   },
   "devDependencies": {
     "@babel/core": "7.0.0",

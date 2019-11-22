@@ -1,6 +1,7 @@
 module.exports = {
 
-  title: 'Vue Admin Template',
+  // title: 'Vue Admin Template',
+  title: 'KG Interactive Construction',
 
   /**
    * @type {boolean} true | false

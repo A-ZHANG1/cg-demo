@@ -42,7 +42,6 @@ export const constantRoutes = [
     component: () => import('@/views/404'),
     hidden: true
   },
-
   {
     path: '/',
     component: Layout,
@@ -54,42 +53,83 @@ export const constantRoutes = [
       meta: { title: 'Dashboard', icon: 'dashboard' }
     }]
   },
-
   {
-    path: '/example',
+    path: '/dataEngineer',
     component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'example' },
+    // name: 'excel',
+    hidden: false,
+    meta: {
+      title: 'DataEngineerView',
+      icon: 'nested',
+      roles: ['admin', 'editor']
+    },
     children: [
       {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
+        path: 'uploadExcel',
+        component: () => import('@/views/excel/uploadExcelCourse'),
+        name: 'UploadExcelCourse',
+        meta: { title: '业务数据上传' }
+      },
+      {
+        path: 'dataCleaningBasis',
+        // component: () => import('@/views/excel/schemasAndConstraints'),
+        component: () => import('@/views/excel/uploadExcelCourse'),
+        name: 'DataCleaningBasis',
+        meta: { title: '清洗规则' }
+      }
+    ]
+  },
+  {
+    path: '/knowledgeEngineer',
+    component: Layout,
+    // redirect: '/example/table',
+    name: 'knowledgeEngineer',
+    meta: { title: 'knowledgeEngineer', icon: 'example' },
+    children: [
+      {
+        path: 'alignmentByAttribute',
+        name: 'AlignmentByAttribute',
+        component: () => import('@/views/knowledgeEngineer/alignmentByAttribute'),
+        meta: { title: 'AlignmentByAttribute', icon: 'table' }
+      },
+      {
+        path: 'alignmentBySubgraph',
+        name: 'AlignmentBySubgraph',
+        component: () => import('@/views/knowledgeEngineer/alignmentBySubgraph'),
+        meta: { title: 'AlignmentBySubgraph', icon: 'table' }
+      },
+      {
+        path: 'disambiguation',
+        name: 'Disambiguation',
+        component: () => import('@/views/knowledgeEngineer/disambiguation'),
+        meta: { title: 'Disambiguation', icon: 'table' }
+      },
+      {
+        path: 'D3Force',
+        name: 'D3Force',
+        component: () => import('@/views/excel/D3Force'),
+        meta: { title: 'D3Force', icon: 'table' }
       },
       {
         path: 'tree',
         name: 'Tree',
         component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
+        meta: { title: '特征融合', icon: 'tree' }
       }
     ]
   },
-
   {
-    path: '/form',
+    path: '/BussinessView',
     component: Layout,
     children: [
       {
         path: 'index',
         name: 'Form',
         component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
+        meta: { title: '知识评估', icon: 'form' }
       }
     ]
   },
-
   {
     path: '/nested',
     component: Layout,
@@ -136,25 +176,14 @@ export const constantRoutes = [
             path: 'menu1-3',
             component: () => import('@/views/nested/menu1/menu1-3'),
             name: 'Menu1-3',
-            meta: { title: 'Menu1-3' }
+            meta: { title: 'KG 1-3' }
           }
         ]
       },
       {
         path: 'menu2',
         component: () => import('@/views/nested/menu2/index'),
-        meta: { title: 'menu2' }
-      }
-    ]
-  },
-
-  {
-    path: 'external-link',
-    component: Layout,
-    children: [
-      {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: 'External Link', icon: 'link' }
+        meta: { title: 'ThreeLayered' }
       }
     ]
   },
