@@ -58,8 +58,15 @@ export default {
     this.scene.add(light)
 
     // 分层概念关联相机
-    this.camera = new THREE.PerspectiveCamera(150, container.clientWidth / container.clientHeight, 1, 1000)
-    this.camera.position.set(40, 60, 100)
+    const width = window.innerWidth
+    const height = window.innerHeight
+    const frustumSize = 200
+    var aspect = width / height
+
+    this.camera = new THREE.OrthographicCamera(frustumSize * aspect / -2, frustumSize * aspect / 2, frustumSize / 2, frustumSize / -2, 0.1, 1000)
+
+    // this.camera = new THREE.PerspectiveCamera(150, container.clientWidth / container.clientHeight, 1, 1000)
+    this.camera.position.set(250, 40, 300)
     this.camera.lookAt(this.scene.position)
 
     const axesHelper = new THREE.AxesHelper(60)
@@ -67,8 +74,6 @@ export default {
 
     const companyPoz = this.addLayer('Company', nodesData.companies, linksData.companyLinks, -50)
     const productPoz = this.addLayer('Product', nodesData.products, linksData.productLinks, 50)
-    console.log(companyPoz)
-    console.log(productPoz)
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true })
     this.renderer.setSize(container.clientWidth, container.clientHeight)
@@ -106,11 +111,11 @@ export default {
       // line.computeLineDistances()
       return line
     },
-    addLayer(className, schemaNodes, schemaLinks, zPos) {
+    addLayer (className, schemaNodes, schemaLinks, zPos) {
       const group = new THREE.Group()
       const g = new dagreD3.graphlib.Graph()
       g.setGraph({})
-      g.setDefaultEdgeLabel(function() { return {} })
+      g.setDefaultEdgeLabel(function () { return {} })
       for (const name in schemaNodes) {
         g.setNode(name, { width: 2, height: 2 })
       }
@@ -125,41 +130,113 @@ export default {
       }
 
       console.log(g)
-      console.log(group)
+      // console.log(group)
+
+      /* dagre.layout g的属性
+* console.log(g._edgeObjs)
+* console.log(g._edgeLabels)
+* console.log(g._edgeCount)
+*/
 
       const targetPozs = []
 
       group.children.forEach((child, idx) => {
         var target = {
-          x: g._nodes[idx].x / 2,
+          x: g._nodes[idx].x, //g._nodes obj key = group children idx
           y: zPos,
-          z: g._nodes[idx].y / 2
+          z: g._nodes[idx].y
         }
         this.moveTo(child, target, userOpts)
         targetPozs.push(target)
       })
       this.scene.add(group)
 
+      for (let l = 0; l < g._edgeCount; l++) {
+        console.log(g._edgeObjs[Object.keys(g._edgeObjs)[l]])
+        console.log(g._edgeObjs[Object.keys(g._edgeObjs)[l]].v)
+        var sourceKey = g._edgeObjs[Object.keys(g._edgeObjs)[l]].v
+        var targetKey = g._edgeObjs[Object.keys(g._edgeObjs)[l]].w
+        var lSource = new THREE.Vector3(g._nodes[sourceKey].x, zPos, g._nodes[sourceKey].y)
+        var lTarget = new THREE.Vector3(g._nodes[targetKey].x, zPos, g._nodes[targetKey].y)
+        var linkMesh = this.addLink(lSource, lTarget)
+        this.setInvisible(linkMesh)
+        group.add(linkMesh)
+        this.appear(linkMesh, userOpts)
+      }
+
       return targetPozs
     },
-    moveTo(obj, target, userOpts, complete) {
+    moveTo (obj, target, userOpts, complete) {
       var current = {
         x: obj.position.x,
         y: obj.position.y,
         z: obj.position.z
       }
-      var update = function() {
+      var update = function () {
         obj.position.set(current.x, current.y, current.z)
       }
-      complete = complete || function() {}
+      complete = complete || function () {}
       var tweens = new TWEEN.Tween(current)
         .to(target, userOpts.duration)
-        .repeat(Infinity)
         .delay(userOpts.delay)
         .easing(userOpts.easing)
+        // .repeat(Infinity)
         .onUpdate(update)
         .onComplete(complete)
         .start()
+      // var tweenLine = new TWEEN.Tween()
+    },
+    lighten (obj, userOpts) {
+      if (obj.material === undefined) return
+      var current
+      if (obj.material instanceof Array) {
+        current = {opacity: obj.material[0].opacity}
+        obj.material.forEach(mt => {
+          mt.setValues({transparent: true})
+        })
+      } else {
+        current = {opacity: obj.material.opacity}
+        obj.material.setValues({transparent: true})
+      }
+      var update = function () {
+        if (obj.material instanceof Array) {
+          obj.material.forEach(mt => {
+            mt.setValues(current)
+          })
+        } else { obj.material.setValues(current) }
+      }
+      var tweens = new TWEEN.Tween(current)
+        .to({opacity: 1}, 200) // duration 200
+        .delay(userOpts.delay + 2500)
+        .easing(TWEEN.Easing.Quadratic.Out)
+        // .repeat(Infinity)
+        .onUpdate(update)
+        .start()
+    },
+    appear (obj, userOpts) {
+      if (obj.children.length > 0) {
+        obj.children.forEach(child => {
+          this.appear(child, userOpts)
+        })
+      }
+      if (obj.material !== undefined) { this.lighten(obj, userOpts) }
+    },
+    setInvisible (obj, opacity = 0) {
+      if (obj.children.length > 0) {
+        obj.children.forEach(child => {
+          this.setInvisible(child, opacity)
+        })
+      }
+      if (obj.material !== undefined) {
+        if (obj.material instanceof Array) {
+          obj.material.forEach(mt => {
+            mt.transparent = true
+            mt.opacity = opacity
+          })
+        } else {
+          obj.material.setValues({transparent: true, opacity: opacity})
+        }
+      }
     },
     animate() {
       // 立方体的旋转

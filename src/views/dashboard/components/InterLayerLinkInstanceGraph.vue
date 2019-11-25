@@ -10,7 +10,6 @@ import DragControls from 'drag-controls'
 DragControls.install({THREE: THREE})
 const OrbitControls = require('three-orbit-controls')(THREE)
 
-
 // kg data 自底向上
 const nodesData = {
   companies: [{ name: '桂林' }, { name: '广州' }, { name: '厦门' }, { name: '杭州' }, { name: '上海' }, { name: '青岛' }, { name: '天津' }],

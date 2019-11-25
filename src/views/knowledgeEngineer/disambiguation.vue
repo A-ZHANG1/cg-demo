@@ -18,57 +18,23 @@ export default {
   name: 'Disambiguation',
   data() {
     return {
+      graph: null,
+      simulation: null,
+      settings: {
+        strokeColor: "#29B5FF",
+        width: 100,
+        svgWigth: 960,
+        svgHeight: 600
+      }
     }
   },
   mounted() {
-    var dataset = [50, 43, 120, 87, 99, 167, 142]
-    var width = 960	// SVG绘制区域的宽度
-    var height = 600	// SVG绘制区域的高度
+    this.initChart()
+  },
+  mehods: {
+    initChart() {
 
-    var nodeFloat = d3.select('nodeFloat')			// 选择<body>
-      .append('svg')			// 在<body>中添加<svg>
-      .attr('width', width)	// 设定<svg>的宽度属性
-      .attr('height', height)// 设定<svg>的高度属性
-    // 外边框
-    var padding = { top: 20, right: 20, bottom: 20, left: 20 }
-    // 矩形所占的宽度（包括空白），单位为像素
-    var rectStep = 35
-    // 矩形所占的宽度（不包括空白），单位为像素
-    var rectWidth = 30
-    var rect = nodeFloat.selectAll('rect')
-      .data(dataset)		// 绑定数据
-      .enter()			// 获取enter部分
-      .append('rect')	// 添加rect元素，使其与绑定数组的长度一致
-      .attr('fill', 'steelblue')		// 设置颜色为steelblue
-      .attr('x', function(d, i) {		// 设置矩形的x坐标
-        return padding.left + i * rectStep
-      })
-      .attr('y', function(d) {		// 设置矩形的y坐标（y的计算不同于常规，浏览器是从上到下来增加y的值，所以是计算上面的部分）
-        return height - padding.bottom - d
-      })
-      .attr('width', rectWidth)		// 设置矩形的宽度
-      .attr('height', function(d) {	// 设置矩形的高度
-        return d
-      })
-
-    var text = nodeFloat.selectAll('text')
-      .data(dataset)			// 绑定数据
-      .enter()				// 获取enter部分
-      .append('text')			// 添加text元素，使其与绑定数组的长度一致
-      .attr('fill', 'white')
-      .attr('font-size', '14px')
-      .attr('text-anchor', 'middle')
-      .attr('x', function(d, i) {
-        return padding.left + i * rectStep
-      })
-      .attr('y', function(d) {
-        return height - padding.bottom - d
-      })
-      .attr('dx', rectWidth / 2)
-      .attr('dy', '1em') /* 沿y轴偏移一个字体的距离*/
-      .text(function(d) {
-        return d
-      })
+    }
   }
   //   var svg = d3.select('svg')
   //   var width = +svg.attr('width')

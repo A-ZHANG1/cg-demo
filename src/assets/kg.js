@@ -235,6 +235,15 @@ export var SubgraphMergingData = {
       'type': null
     },
     {
+      'companyId': '2',
+      'name': '中芯国际',
+      'capital': '219000',
+      'nodeWeight': '20',
+      'category': 0,
+      'symbolSize': 30,
+      'type': null
+    },
+    {
       'companyId': '3',
       'name': '上海宏力半导体制造有限公司',
       'capital': '90000',
@@ -254,16 +263,19 @@ export var SubgraphMergingData = {
     }],
   capitalFlowLink: [
     {source: '锐迪科微电子（上海）有限公司', target: '中芯国际集成电路制造（上海）有限公司'},
-    {source: '锐迪科微电子（上海）有限公司', target: '上海宏力半导体制造有限公司'},
     {source: '上海宏力半导体制造有限公司', target: '中芯国际集成电路制造（上海）有限公司'},
     {source: '威宇科技测试封装有限公司', target: '中芯国际集成电路制造（上海）有限公司'},
+    {source: '锐迪科微电子（上海）有限公司', target: '中芯国际'},
+    {source: '上海宏力半导体制造有限公司', target: '中芯国际'},
+    {source: '威宇科技测试封装有限公司', target: '中芯国际'},
   ],
   sameAsRel: [
     {name: 'SameAs', category: 2, symbolSize: 10}
   ],
   sameAsLink: [
-    {source: 'SameAs',
-      target: '#2011',
+    {
+      source: 'SameAs',
+      target: '中芯国际',
       lineStyle: {
         normal: {
           // type: 'dashed',
@@ -273,8 +285,9 @@ export var SubgraphMergingData = {
           color: 'target'
         }
       }},
-    {source: 'SameAs',
-      target: '1009',
+    {
+      source: 'SameAs',
+      target: '中芯国际集成电路制造（上海）有限公司',
       lineStyle: {
         normal: {
           type: 'dashed',

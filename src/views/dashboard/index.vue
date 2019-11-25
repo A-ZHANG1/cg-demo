@@ -24,6 +24,19 @@
       </el-col>
     </el-row>
 
+<!--    <el-row>-->
+<!--      <el-col :span="24">-->
+<!--        <el-card  class="box-card" style="width: 100%; height: 900px">-->
+<!--          <div slot="header" class="clearfix">-->
+<!--            <span>Instance Graph Layering</span>-->
+<!--          </div>-->
+<!--          <div>-->
+<!--            <InterLayerLinkInstanceGraph/>-->
+<!--          </div>-->
+<!--        </el-card>-->
+<!--      </el-col>-->
+<!--    </el-row>-->
+
     <el-row>
       <el-col :span="24">
         <el-card  class="box-card" style="width: 100%; height: 900px">
@@ -31,7 +44,7 @@
             <span>Instance Graph Layering</span>
           </div>
           <div>
-            <InterLayerLinkInstanceGraph/>
+            <InterLayerLayoutDagre/>
           </div>
         </el-card>
       </el-col>
@@ -43,8 +56,9 @@
 import ConceptGraph from './components/ConceptGraph'
 import InstanceGraph from './components/InstanceGraph'
 import InterLayerLinkInstanceGraph from './components/InterLayerLinkInstanceGraph'
+import InterLayerLayoutDagre from './components/InterLayerLayoutDagre'
 export default {
-  components: {ConceptGraph, InstanceGraph, InterLayerLinkInstanceGraph}
+  components: {ConceptGraph, InstanceGraph, InterLayerLinkInstanceGraph, InterLayerLayoutDagre}
 }
 
 </script>

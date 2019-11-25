@@ -1,18 +1,9 @@
 <template>
   <div>
-    <el-row>
-      <el-col :span="12">
-        <SingleViewLeft :nodes="nodes" :links="links" :node-categories="nodeCategories" />
-      </el-col>
-
-      <el-col :span="12">
-        <SingleViewRight />
-      </el-col>
-    </el-row>
 
     <el-row>
       <el-col :span="24">
-        <ViewMerging />
+        <ViewMerging :nodes="nodesVM" :links="linksVM" :node-categories="nodeCategoriesVM"/>
       </el-col>
     </el-row>
 
@@ -90,7 +81,7 @@ import ViewMerging from './components/ViewMerging'
 import SingleViewLeft from './components/SingleViewLeft'
 import SingleViewRight from './components/SingleViewRight'
 // import SameAsDetailTable from './components/SameAsDetailTable'
-import { ViewPoint1, ConflitGraph } from '@/assets/kg.js'
+import { ViewPoint1, SubgraphMergingData} from '@/assets/kg.js'
 export default {
   name: 'AlignmentBySubgraph',
   components: {
@@ -111,7 +102,11 @@ export default {
       },
       nodes: ViewPoint1.company.concat(ViewPoint1.contract),
       links: ViewPoint1.capitalFlowLink,
-      nodeCategories: ViewPoint1.nodeCategories
+      nodeCategories: ViewPoint1.nodeCategories,
+
+      nodesVM: SubgraphMergingData.company.concat(SubgraphMergingData.sameAsRel),
+      linksVM: SubgraphMergingData.capitalFlowLink.concat(SubgraphMergingData.sameAsLink),
+      nodeCategoriesVM: SubgraphMergingData.nodeCategories
     }
   },
   methods: {
